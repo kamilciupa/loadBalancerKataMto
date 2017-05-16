@@ -28,7 +28,7 @@ public class ServerLoadBalancerTest {
 	public void balancingServer_OneServer_OneVm_fullLoad() {
 		
 		Server theServer = a(ServerBuilder.server().withCapacity(1));
-		Vm theVm = a(vm().ofSize(1));
+		Vm theVm = a(VmBuilder.vm().ofSize(1));
 		
 		balancing(aServersListwith(theServer), aVmsListWith(theVm));
 		
@@ -42,13 +42,7 @@ public class ServerLoadBalancerTest {
 		return vms;
 	}
 
-	private Vm a(VmBuilder builder) {
-		return builder.build();
-	}
 
-	private VmBuilder vm() {
-		return new VmBuilder();
-	}
 
 	private void balancing(Server[] servers, Vm[] vms) {
 		new ServerLoadBalancer().balance(servers,vms );
@@ -62,10 +56,10 @@ public class ServerLoadBalancerTest {
 		return servers;
 	}
 
-	private Server a(ServerBuilder builder) {
+	private <T> T  a (Builder<T> builder){
 		return builder.build();
 	}
-
-
+	
+	
 
 }
