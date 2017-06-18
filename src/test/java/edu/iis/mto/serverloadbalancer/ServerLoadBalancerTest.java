@@ -1,7 +1,10 @@
 package edu.iis.mto.serverloadbalancer;
 
 
+import static edu.iis.mto.serverloadbalancer.CurrentLoadPercentageMatcher.hasCurrentLoadOf;
+import static edu.iis.mto.serverloadbalancer.ServerBuilder.server;
 import static edu.iis.mto.serverloadbalancer.ServerVmsCountMatcher.hasAVmsCount;
+import static edu.iis.mto.serverloadbalancer.VmBuilder.vm;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -85,6 +88,26 @@ public class ServerLoadBalancerTest {
 		
 		balancing(aServersListwith(theServer), aVmsListWith(theVm));
 		assertThat("Server should not contain the vm", !theServer.contains(theVm));
+	}
+	
+	
+	@Test
+	public void balancingFinal(){
+		
+		Server server1 = a(server().withCapacity(4));
+		Server server2 = a(server().withCapacity(6));
+		
+		Vm vm1 = a(vm().ofSize(1));
+		Vm vm2 = a(vm().ofSize(4));
+		Vm vm3 = a(vm().ofSize(2));
+		
+		balancing(aServersListwith(server1, server2), aVmsListWith(vm1, vm2, vm3));
+		assertThat("Server 1 should contain the vm1", server1.contains(vm1));
+		assertThat("Server 2 should contain the vm2", server2.contains(vm2));
+		assertThat("Server 1 should contain the vm3", server1.contains(vm3));
+		
+		assertThat(server1, hasCurrentLoadOf(75.0d));
+		assertThat(server2, hasCurrentLoadOf(66.66d));
 	}
 	
 	private Vm[] aVmsListWith(Vm ...vms) {
